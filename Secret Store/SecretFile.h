@@ -24,11 +24,9 @@ class SecretFile {
 public:
 	SecretFile(const std::string& path);
 	~SecretFile();
-	std::vector<char> Read(const std::string& decryption_key);
-	void Write(std::vector<char>& data, const std::string& encryption_key);
+	std::vector<char> Read(const unsigned char* decryption_key);
+	void Write(std::vector<char>& data, const unsigned char* encryption_key);
 
 private:
-	void Encrypt(char* s, size_t len);
-	void Decrypt(char* s, size_t len);
 	std::string path;
 };

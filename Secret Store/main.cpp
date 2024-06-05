@@ -1,6 +1,7 @@
 ﻿#include <iostream>;
 #include <string>;
 #include <algorithm>
+#include <sodium.h>
 #include "Console.h";
 #include <vector>
 #include "SecretFile.h"
@@ -28,6 +29,17 @@ std::string getHome() {
 int main(int argc, char* argv[])
 {
 	Utils::Console console(std::cin, std::cout, std::cerr, std::clog);
+
+	if (sodium_init() != 0) {
+		console.PrintError("Could not initialize cryptography\n");
+		return ERROR_EXIT_CODE;
+	}
+
+	// TODO: user settable
+	unsigned char key[crypto_secretstream_xchacha20poly1305_KEYBYTES] = "this is an ok key i suppose";
+	crypto_secretstream_xchacha20poly1305_keygen(key);
+
+
 	std::string home = getHome();
 	std::string path = home + std::string("/.sneak");
 
@@ -46,7 +58,6 @@ int main(int argc, char* argv[])
 	stringToUpper(command);
 
 	if (command == "READ") {
-		std::string key = "Foo"; // TODO
 		SecretFile secret(path);
 		std::vector<char> data = secret.Read(key);
 
@@ -54,8 +65,6 @@ int main(int argc, char* argv[])
 		std::fwrite(data.data(), sizeof(char), data.size(), stdout);
 	}
 	else if (command == "WRITE") {
-		std::string key = "Foo"; // TODO
-
 		std::vector<char> data;
 		FILE* const in = fdopen(dup(fileno(stdin)), "rb");
 		while (!std::feof(in)) {
