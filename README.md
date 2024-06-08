@@ -4,4 +4,4 @@ Allows storing secrets in an encrypted file (at `~/.sneak`). This project works 
 
 Use `secretstore write` to write a secret, and `secretstore read` to read it.
 
-Cryptography uses [libsodium](https://github.com/jedisct1/libsodium)
+Cryptography uses [libsodium](https://github.com/jedisct1/libsodium) as provided by [libsodium-cmake](https://github.com/robinlinden/libsodium-cmake.git)
