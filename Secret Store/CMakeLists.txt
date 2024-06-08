@@ -3,10 +3,10 @@
 #
 
 # Add source to this project's executable.
-add_executable (CMakeTarget "main.cpp"  "Console.h" "Console.cpp" "SecretFile.h" "SecretFile.cpp"  "FileWrapper.h" "KeyDerivationParams.h")
+add_executable (SecretStore "main.cpp"  "Console.h" "Console.cpp" "SecretFile.h" "SecretFile.cpp"  "FileWrapper.h" "KeyDerivationParams.h")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET CMakeTarget PROPERTY CXX_STANDARD 20)
+  set_property(TARGET SecretStore PROPERTY CXX_STANDARD 20)
 endif()
 
 include(FetchContent)
@@ -19,7 +19,7 @@ FetchContent_Declare(Sodium
 set(SODIUM_DISABLE_TESTS ON)
 FetchContent_MakeAvailable(Sodium)
 
-target_link_libraries(CMakeTarget
+target_link_libraries(SecretStore
     PRIVATE
         sodium
 )
