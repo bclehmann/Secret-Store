@@ -11,6 +11,7 @@
 #else
 #include <unistd.h>
 #endif
+#include "KeyDerivationParams.h"
 
 const int ERROR_EXIT_CODE = 127;
 
@@ -26,6 +27,11 @@ std::string getHome() {
 #endif
 }
 
+std::string passwordPrompt(Utils::Console console) {
+	console.Print("Enter a password: ");
+	return console.ReadPassword();
+}
+
 int main(int argc, char* argv[])
 {
 	Utils::Console console(std::cin, std::cout, std::cerr, std::clog);
@@ -34,12 +40,6 @@ int main(int argc, char* argv[])
 		console.PrintError("Could not initialize cryptography\n");
 		return ERROR_EXIT_CODE;
 	}
-
-	// TODO: user settable
-	unsigned char key[crypto_secretstream_xchacha20poly1305_KEYBYTES] = "this is an ok key i suppose";
-	crypto_secretstream_xchacha20poly1305_keygen(key);
-
-
 	std::string home = getHome();
 	std::string path = home + std::string("/.sneak");
 
@@ -59,12 +59,15 @@ int main(int argc, char* argv[])
 
 	if (command == "READ") {
 		SecretFile secret(path);
-		std::vector<char> data = secret.Read(key);
+
+		std::string password = passwordPrompt(console);
+		std::vector<char> data = secret.Read(password);
 
 		FILE* const out = fdopen(dup(fileno(stdout)), "wb");
 		std::fwrite(data.data(), sizeof(char), data.size(), stdout);
 	}
 	else if (command == "WRITE") {
+		console.Print("Print your secrets below.\n");
 		std::vector<char> data;
 		FILE* const in = fdopen(dup(fileno(stdin)), "rb");
 		while (!std::feof(in)) {
@@ -78,11 +81,12 @@ int main(int argc, char* argv[])
 		}
 
 		SecretFile secret(path);
-		secret.Write(data, key);
+		std::string password = passwordPrompt(console);
+		secret.Write(data, password);
 	}
 	else {
 		console.PrintError("Unknown command\n");
+		return ERROR_EXIT_CODE;
 	}
-
 	return 0;
 }

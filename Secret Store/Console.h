@@ -10,8 +10,10 @@ namespace Utils {
 		void PrintError(const std::string& text);
 		void Print(const std::string& text);
 		void Print(char c);
+		std::string ReadPassword();
 
 	private:
+		void ToggleInputEcho();
 		bool supportsAnsiColourCodes;
 		std::istream& cin;
 		std::ostream& cout;
